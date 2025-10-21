@@ -1,0 +1,41 @@
+{
+  "name": "@wikimoe/vr-equirectangular-viewer",
+  "version": "1.0.0",
+  "description": "一个轻量级、零依赖的 WebXR VR 全景查看器插件，支持 360° 全景图片的沉浸式体验",
+  "main": "dist/vr-equirectangular-viewer.min.js",
+  "module": "dist/vr-equirectangular-viewer.esm.js",
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "node build.js",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "webxr",
+    "vr",
+    "360",
+    "panorama",
+    "equirectangular",
+    "viewer",
+    "virtual-reality",
+    "webgl",
+    "immersive"
+  ],
+  "author": "your-name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eeg1412/VR-Equirectangular-Viewer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/eeg1412/VR-Equirectangular-Viewer/issues"
+  },
+  "homepage": "https://github.com/eeg1412/VR-Equirectangular-Viewer#readme",
+  "engines": {
+    "node": ">=12.0.0"
+  }
+}
