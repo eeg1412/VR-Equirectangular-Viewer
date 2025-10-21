@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VR全景插件示例</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 20px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+          sans-serif;
+        background: #1a1a1a;
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+      }
+
+      .container {
+        text-align: center;
+        max-width: 600px;
+      }
+
+      h1 {
+        margin-bottom: 10px;
+      }
+
+      .status {
+        margin: 20px 0;
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        font-size: 14px;
+      }
+
+      .vr-button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        padding: 20px 50px;
+        border-radius: 50px;
+        color: white;
+        font-size: 18px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        margin: 10px;
+      }
+
+      .vr-button:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+      }
+
+      .vr-button:disabled {
+        background: #555;
+        cursor: not-allowed;
+        box-shadow: none;
+      }
+
+      .info {
+        margin-top: 30px;
+        font-size: 14px;
+        color: #999;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🥽 VR全景查看器插件</h1>
+      <p>极简WebXR VR体验</p>
+
+      <div class="status" id="status">初始化中...</div>
+
+      <button class="vr-button" id="vrButton" disabled>进入VR模式</button>
+
+      <button class="vr-button" id="destroyButton" style="background: #e74c3c">
+        销毁插件
+      </button>
+
+      <div class="info">
+        <p><strong>特性:</strong></p>
+        <ul style="list-style: none; padding: 0">
+          <li>✅ 支持超大尺寸全景图（11904×5952）</li>
+          <li>✅ 自动设备检测和纹理优化</li>
+          <li>✅ 完整内存管理和资源释放</li>
+          <li>✅ 零依赖，纯原生WebXR</li>
+        </ul>
+      </div>
+    </div>
+
+    <script src="vr-plugin.js"></script>
+    <script>
+      const statusEl = document.getElementById('status')
+      const vrButton = document.getElementById('vrButton')
+      const destroyButton = document.getElementById('destroyButton')
+
+      let vrViewer = null
+
+      // 初始化插件（只检查支持，不加载资源）
+      async function init() {
+        try {
+          // 创建VR查看器实例（轻量级，只存储配置）
+          vrViewer = new VREquirectangularViewer({
+            imageUrl: 'img/equirectangular.webp',
+            maxTextureSize: 4096,
+
+            onError: error => {
+              statusEl.textContent = '❌ 错误: ' + error
+              console.error('VR错误:', error)
+            },
+
+            onVRStart: () => {
+              statusEl.textContent = '✅ VR模式已激活'
+              vrButton.textContent = '退出VR模式'
+            },
+
+            onVREnd: () => {
+              statusEl.textContent = '✅ 已退出VR，资源已自动释放'
+              vrButton.textContent = '进入VR模式'
+            }
+          })
+
+          // 检查WebXR支持（无需加载任何资源）
+          const isSupported = await vrViewer.isVRSupported()
+
+          if (isSupported) {
+            statusEl.textContent = '✅ 设备支持WebXR VR - 点击按钮进入'
+            vrButton.disabled = false
+          } else {
+            statusEl.textContent = '❌ 设备不支持WebXR VR'
+            statusEl.innerHTML +=
+              '<br><small>需要VR设备或支持WebXR的浏览器</small>'
+          }
+        } catch (error) {
+          statusEl.textContent = '❌ 初始化失败: ' + error.message
+          console.error(error)
+        }
+      }
+
+      // VR按钮点击
+      vrButton.addEventListener('click', async () => {
+        try {
+          vrButton.disabled = true
+
+          // 检查是否已在VR中
+          if (vrViewer.xrSession) {
+            // 退出VR（会自动销毁资源）
+            vrViewer.exitVR()
+          } else {
+            // 进入VR（此时才加载所有资源）
+            statusEl.textContent = '⏳ 加载中...'
+            await vrViewer.enterVR()
+          }
+        } catch (error) {
+          statusEl.textContent = '❌ ' + error.message
+          console.error(error)
+        } finally {
+          vrButton.disabled = false
+        }
+      })
+
+      // 手动销毁按钮（通常不需要，退出VR会自动销毁）
+      destroyButton.addEventListener('click', () => {
+        if (vrViewer) {
+          vrViewer.destroy()
+          statusEl.textContent = '🗑️ 已手动销毁'
+          vrButton.disabled = true
+          destroyButton.disabled = true
+        }
+      })
+
+      // 页面加载完成后初始化
+      window.addEventListener('load', init)
+
+      // 页面卸载时清理（保险起见）
+      window.addEventListener('beforeunload', () => {
+        if (vrViewer) {
+          vrViewer.destroy()
+        }
+      })
+    </script>
+  </body>
+</html>
