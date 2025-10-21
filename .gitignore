@@ -1,9 +1,6 @@
 # 依赖
 node_modules/
 
-# 构建输出
-dist/
-
 # 日志文件
 npm-debug.log*
 yarn-debug.log*

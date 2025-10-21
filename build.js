@@ -13,7 +13,7 @@ if (!fs.existsSync(distDir)) {
 }
 
 // 读取源文件
-const sourceFile = path.join(__dirname, 'vr-plugin.js')
+const sourceFile = path.join(__dirname, '/src/index.js')
 const sourceCode = fs.readFileSync(sourceFile, 'utf8')
 
 // 生成 UMD 版本（压缩版）
