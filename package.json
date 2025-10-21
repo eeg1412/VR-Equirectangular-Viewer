@@ -1,9 +1,6 @@
 {
-  "name": "@wikimoe/vr-equirectangular-viewer",
+  "name": "vr-equirectangular-viewer",
   "version": "1.0.0",
-  "publishConfig": {
-    "access": "public"
-  },
   "description": "一个轻量级、零依赖的 WebXR VR 全景查看器插件，支持 360° 全景图片的沉浸式体验",
   "main": "dist/vr-equirectangular-viewer.min.js",
   "module": "dist/vr-equirectangular-viewer.esm.js",
