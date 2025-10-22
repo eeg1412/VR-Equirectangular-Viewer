@@ -309,11 +309,14 @@ class VREquirectangularViewer {
 
       image.onload = () => {
         let maxSize = gl.getParameter(gl.MAX_TEXTURE_SIZE)
+        console.log(`设备最大纹理尺寸: ${maxSize}`)
         if (this.maxTextureSize) {
+          console.log(`配置最大纹理尺寸: ${this.maxTextureSize}`)
           maxSize = Math.min(
             gl.getParameter(gl.MAX_TEXTURE_SIZE),
             this.maxTextureSize
           )
+          console.log(`使用最大纹理尺寸: ${maxSize}`)
         }
 
         let targetImage = image

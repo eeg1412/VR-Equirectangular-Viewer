@@ -67,6 +67,11 @@
         color: #999;
       }
     </style>
+    <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
+    <script>
+      // VConsole will be exported to `window.VConsole` by default.
+      var vConsole = new window.VConsole()
+    </script>
   </head>
   <body>
     <div class="container">
@@ -106,6 +111,7 @@
           // 创建VR查看器实例（轻量级，只存储配置）
           vrViewer = new VREquirectangularViewer({
             imageUrl: 'img/equirectangular.webp',
+            // maxTextureSize: 4096, // 可选，限制最大纹理尺寸以适应低端设备
 
             onError: error => {
               statusEl.textContent = '❌ 错误: ' + error
