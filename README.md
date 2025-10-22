@@ -194,7 +194,6 @@ await vrViewer.enterVR()
 const vrViewer = new VREquirectangularViewer({
   imageUrl: 'img/equirectangular.webp',
   maxTextureSize: 4096,
-  sphereRadius: 50, // 可选：调整VR空间感，默认50
 
   onVRStart: () => {
     console.log('✅ VR 模式已启动')
@@ -243,7 +242,6 @@ new VREquirectangularViewer(options)
 
 - `imageUrl` (string): 全景图片 URL（默认: `'img/equirectangular.jpg'`）
 - `maxTextureSize` (number): 最大纹理尺寸，像素（默认: `4096`）
-- `sphereRadius` (number): 球体半径，控制 VR 空间感（默认: `50`）
 - `onVRStart` (function): VR 启动回调
 - `onVREnd` (function): VR 退出回调
 - `onError` (function): 错误回调
@@ -430,57 +428,6 @@ const vrViewer = new VREquirectangularViewer({
 
 ---
 
-### sphereRadius
-
-**类型**: `number`  
-**默认**: `50`
-
-球体半径，用于控制 VR 场景中的空间感和视觉尺度。
-
-**说明**:
-
-- 较小的半径会让周围环境看起来更大、更有包围感
-- 较大的半径会让环境看起来更远、空间感更开阔
-- 建议根据实际内容和用户体验进行调整
-
-**推荐值**:
-
-- 小空间/近距离感: `30-40`
-- 自然空间感（推荐）: `50-60`
-- 大空间/远距离感: `70-100`
-
-**示例**:
-
-```javascript
-// 默认值（自然视觉）
-const vrViewer = new VREquirectangularViewer({
-  imageUrl: 'img/room.jpg',
-  sphereRadius: 50
-})
-
-// 增大半径（更开阔的空间感）
-const vrViewer = new VREquirectangularViewer({
-  imageUrl: 'img/outdoor.jpg',
-  sphereRadius: 80 // 适合室外场景
-})
-
-// 减小半径（更有包围感）
-const vrViewer = new VREquirectangularViewer({
-  imageUrl: 'img/closeup.jpg',
-  sphereRadius: 35 // 适合近距离场景
-})
-```
-
-**效果对比**:
-
-| 半径值 | 视觉效果                     | 适用场景           |
-| ------ | ---------------------------- | ------------------ |
-| 30-40  | 物体看起来较大，强烈的包围感 | 小房间、特写场景   |
-| 50-60  | 自然的视觉比例（推荐）       | 通用场景、室内环境 |
-| 70-100 | 物体看起来较小，开阔的空间感 | 室外场景、大型空间 |
-
----
-
 ### onVRStart
 
 **类型**: `function`  
@@ -639,9 +586,9 @@ initVR().then(vrViewer => {
 
 ```javascript
 const equirectangulars = [
-  { name: '办公室', url: 'img/office.jpg', radius: 45 },
-  { name: '会议室', url: 'img/meeting.jpg', radius: 50 },
-  { name: '休息区', url: 'img/lounge.jpg', radius: 60 }
+  { name: '办公室', url: 'img/office.jpg' },
+  { name: '会议室', url: 'img/meeting.jpg' },
+  { name: '休息区', url: 'img/lounge.jpg' }
 ]
 
 let currentViewer = null
@@ -652,10 +599,9 @@ async function switchEquirectangular(index) {
     currentViewer.destroy()
   }
 
-  // 创建新查看器（可为每个场景设置不同的半径）
+  // 创建新查看器
   currentViewer = new VREquirectangularViewer({
     imageUrl: equirectangulars[index].url,
-    sphereRadius: equirectangulars[index].radius, // 根据场景调整
     onVRStart: () => {
       console.log(`正在查看: ${equirectangulars[index].name}`)
     }
@@ -820,7 +766,6 @@ const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent)
 const vrViewer = new VREquirectangularViewer({
   imageUrl: 'img/equirectangular.webp',
   maxTextureSize: isMobile ? 4096 : 8192, // 移动设备限制为 4K
-  sphereRadius: 50, // 根据场景类型调整空间感
   onError: error => {
     if (error.includes('纹理')) {
       // 纹理问题时重试更小尺寸
@@ -828,34 +773,6 @@ const vrViewer = new VREquirectangularViewer({
     }
   }
 })
-```
-
----
-
-### 5. 调整 VR 空间感
-
-```javascript
-// 根据全景内容类型调整球体半径
-function createVRViewer(imageUrl, sceneType) {
-  const radiusPresets = {
-    closeup: 35, // 近距离特写
-    indoor: 50, // 室内场景（默认）
-    outdoor: 70, // 室外开阔场景
-    panoramic: 90 // 大全景
-  }
-
-  return new VREquirectangularViewer({
-    imageUrl: imageUrl,
-    sphereRadius: radiusPresets[sceneType] || 50,
-    onVRStart: () => {
-      console.log(`${sceneType} 场景，半径: ${radiusPresets[sceneType]}`)
-    }
-  })
-}
-
-// 使用示例
-const outdoorViewer = createVRViewer('img/landscape.jpg', 'outdoor')
-const roomViewer = createVRViewer('img/room.jpg', 'indoor')
 ```
 
 ---
@@ -955,42 +872,7 @@ npx http-server -S -C cert.pem -K key.pem
 
 ---
 
-### Q6: 为什么在 VR 中物体看起来过大或过小？
-
-**原因**: 球体半径设置不适合当前场景类型。
-
-**解决方案**: 调整 `sphereRadius` 参数
-
-```javascript
-// 如果物体看起来太大（空间感太小）
-const vrViewer = new VREquirectangularViewer({
-  imageUrl: 'img/equirectangular.jpg',
-  sphereRadius: 70 // 增大半径，让空间感更开阔
-})
-
-// 如果物体看起来太小（缺乏包围感）
-const vrViewer = new VREquirectangularViewer({
-  imageUrl: 'img/equirectangular.jpg',
-  sphereRadius: 35 // 减小半径，增强包围感
-})
-
-// 使用默认值（适合大多数场景）
-const vrViewer = new VREquirectangularViewer({
-  imageUrl: 'img/equirectangular.jpg',
-  sphereRadius: 50 // 默认值，自然的视觉比例
-})
-```
-
-**调整建议**:
-
-- 室内小房间: 30-40
-- 一般室内场景: 45-55
-- 室外开阔场景: 60-80
-- 大型全景: 80-100
-
----
-
-### Q7: 如何自定义球体精度？
+### Q6: 如何自定义球体精度？
 
 当前版本球体细分度固定为 60x60。如需自定义，可修改 `_createSphere()` 方法：
 
@@ -1011,7 +893,7 @@ _createSphere() {
 
 ---
 
-### Q8: 支持视频全景吗？
+### Q7: 支持视频全景吗？
 
 当前版本仅支持静态图片。视频全景需要额外实现：
 
@@ -1207,12 +1089,6 @@ class CustomVRViewer extends VREquirectangularViewer {
 ---
 
 ## 更新日志
-
-### v1.1.0 (2025-10-22)
-
-- ✅ 新增 `sphereRadius` 可配置参数
-- ✅ 优化 VR 空间感控制
-- ✅ 更新文档和使用示例
 
 ### v1.0.0 (2025-10-21)
 
