@@ -37,8 +37,8 @@
 class VREquirectangularViewer {
   constructor(options = {}) {
     // 配置选项
-    this.imageUrl = options.imageUrl || 'img/equirectangular.jpg'
-    this.maxTextureSize = options.maxTextureSize || 4096 // VR设备安全值
+    this.imageUrl = options.imageUrl || null
+    this.maxTextureSize = options.maxTextureSize || null
     this.onError = options.onError || console.error
     this.onVRStart = options.onVRStart || (() => {})
     this.onVREnd = options.onVREnd || (() => {})
@@ -313,18 +313,25 @@ class VREquirectangularViewer {
       image.crossOrigin = 'anonymous'
 
       image.onload = () => {
-        const maxSize = Math.min(
-          gl.getParameter(gl.MAX_TEXTURE_SIZE),
-          this.maxTextureSize
-        )
+        let maxSize = gl.getParameter(gl.MAX_TEXTURE_SIZE)
+        if (this.maxTextureSize) {
+          maxSize = Math.min(
+            gl.getParameter(gl.MAX_TEXTURE_SIZE),
+            this.maxTextureSize
+          )
+        }
 
         let targetImage = image
         const maxDim = Math.max(image.width, image.height)
 
         // 如果图片太大，缩小处理
         if (maxDim > maxSize) {
+          console.log(
+            `图片尺寸过大(${image.width}x${image.height})，正在缩放到最大边长${maxSize}...`
+          )
           targetImage = this._resizeImage(image, maxSize)
         }
+        console.log(`使用图片尺寸: ${targetImage.width}x${targetImage.height}`)
 
         gl.bindTexture(gl.TEXTURE_2D, this.texture)
 
@@ -375,6 +382,11 @@ class VREquirectangularViewer {
    * 进入VR模式（懒加载初始化）
    */
   async enterVR() {
+    // 检查 imageUrl 是否已设置
+    if (!this.imageUrl) {
+      throw new Error('未设置全景图片URL (imageUrl)')
+    }
+    // 已在VR模式中
     if (this.xrSession) {
       throw new Error('已经在VR模式中')
     }

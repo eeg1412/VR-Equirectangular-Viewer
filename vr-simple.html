@@ -106,7 +106,6 @@
           // 创建VR查看器实例（轻量级，只存储配置）
           vrViewer = new VREquirectangularViewer({
             imageUrl: 'img/equirectangular.webp',
-            maxTextureSize: 4096,
 
             onError: error => {
               statusEl.textContent = '❌ 错误: ' + error
