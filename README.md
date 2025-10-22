@@ -243,7 +243,7 @@ new VREquirectangularViewer(options)
 
 - `imageUrl` (string): 全景图片 URL（默认: `'img/equirectangular.jpg'`）
 - `maxTextureSize` (number): 最大纹理尺寸，像素（默认: `4096`）
-- `sphereRadius` (number): 球体半径，控制VR空间感（默认: `50`）
+- `sphereRadius` (number): 球体半径，控制 VR 空间感（默认: `50`）
 - `onVRStart` (function): VR 启动回调
 - `onVREnd` (function): VR 退出回调
 - `onError` (function): 错误回调
@@ -473,10 +473,10 @@ const vrViewer = new VREquirectangularViewer({
 
 **效果对比**:
 
-| 半径值 | 视觉效果 | 适用场景 |
-|--------|----------|----------|
-| 30-40 | 物体看起来较大，强烈的包围感 | 小房间、特写场景 |
-| 50-60 | 自然的视觉比例（推荐） | 通用场景、室内环境 |
+| 半径值 | 视觉效果                     | 适用场景           |
+| ------ | ---------------------------- | ------------------ |
+| 30-40  | 物体看起来较大，强烈的包围感 | 小房间、特写场景   |
+| 50-60  | 自然的视觉比例（推荐）       | 通用场景、室内环境 |
 | 70-100 | 物体看起来较小，开阔的空间感 | 室外场景、大型空间 |
 
 ---
@@ -838,10 +838,10 @@ const vrViewer = new VREquirectangularViewer({
 // 根据全景内容类型调整球体半径
 function createVRViewer(imageUrl, sceneType) {
   const radiusPresets = {
-    'closeup': 35,      // 近距离特写
-    'indoor': 50,       // 室内场景（默认）
-    'outdoor': 70,      // 室外开阔场景
-    'panoramic': 90     // 大全景
+    closeup: 35, // 近距离特写
+    indoor: 50, // 室内场景（默认）
+    outdoor: 70, // 室外开阔场景
+    panoramic: 90 // 大全景
   }
 
   return new VREquirectangularViewer({
@@ -965,23 +965,24 @@ npx http-server -S -C cert.pem -K key.pem
 // 如果物体看起来太大（空间感太小）
 const vrViewer = new VREquirectangularViewer({
   imageUrl: 'img/equirectangular.jpg',
-  sphereRadius: 70  // 增大半径，让空间感更开阔
+  sphereRadius: 70 // 增大半径，让空间感更开阔
 })
 
 // 如果物体看起来太小（缺乏包围感）
 const vrViewer = new VREquirectangularViewer({
   imageUrl: 'img/equirectangular.jpg',
-  sphereRadius: 35  // 减小半径，增强包围感
+  sphereRadius: 35 // 减小半径，增强包围感
 })
 
 // 使用默认值（适合大多数场景）
 const vrViewer = new VREquirectangularViewer({
   imageUrl: 'img/equirectangular.jpg',
-  sphereRadius: 50  // 默认值，自然的视觉比例
+  sphereRadius: 50 // 默认值，自然的视觉比例
 })
 ```
 
 **调整建议**:
+
 - 室内小房间: 30-40
 - 一般室内场景: 45-55
 - 室外开阔场景: 60-80
