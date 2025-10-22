@@ -645,6 +645,3 @@ class VREquirectangularViewer {
     this.xrRefSpace = null
   }
 }
-
-// 导出
-export default VREquirectangularViewer

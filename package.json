@@ -10,6 +10,13 @@
     "README.md",
     "LICENSE"
   ],
+  "exports": {
+    ".": {
+      "import": "./dist/vr-equirectangular-viewer.esm.js",
+      "require": "./dist/vr-equirectangular-viewer.min.js",
+      "default": "./dist/vr-equirectangular-viewer.min.js"
+    }
+  },
   "scripts": {
     "build": "node build.js",
     "prepublishOnly": "npm run build"

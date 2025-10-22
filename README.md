@@ -104,6 +104,72 @@
 <script src="vr-plugin.js"></script>
 ```
 
+### 1.1 普通引入（script 标签）
+
+如果你不使用打包工具，可以直接通过 `<script>` 标签引入 UMD 构建文件（例如项目内的 `dist` 目录），插件会挂载到全局 `window`：
+
+```html
+<!-- 在页面中直接引用构建产物 -->
+<script src="dist/vr-equirectangular-viewer.min.js"></script>
+<script>
+  const vrViewer = new window.VREquirectangularViewer({
+    imageUrl: 'img/equirectangular.jpg',
+    onVRStart: () => console.log('VR 启动'),
+    onVREnd: () => console.log('VR 退出')
+  })
+
+  document.getElementById('enterVR').addEventListener('click', async () => {
+    try {
+      await vrViewer.enterVR()
+    } catch (err) {
+      console.error(err)
+    }
+  })
+</script>
+```
+
+> 注意：直接引用本地或项目内的构建文件时，请确认文件路径正确，并且页面通过 HTTPS 或 localhost 提供（WebXR 要求）。
+
+### 1.2 通过 npm 使用
+
+如果你的项目使用 npm/yarn，并使用打包工具（例如 webpack、Rollup、Parcel、Vite 等），推荐通过 npm 安装并以 ESM 或 CommonJS 方式引入：
+
+安装：
+
+```bash
+npm install vr-equirectangular-viewer --save
+# 或者使用 yarn
+yarn add vr-equirectangular-viewer
+```
+
+在现代项目中以 ESM 方式引入：
+
+```javascript
+import VREquirectangularViewer from 'vr-equirectangular-viewer/dist/vr-equirectangular-viewer.esm.js'
+
+const vrViewer = new VREquirectangularViewer({
+  imageUrl: 'img/equirectangular.jpg'
+})
+await vrViewer.enterVR()
+```
+
+如果你的环境使用 CommonJS（例如 Node + 打包器的兼容模式），可以引入 UMD 构建：
+
+```javascript
+const VREquirectangularViewer = require('vr-equirectangular-viewer/dist/vr-equirectangular-viewer.min.js')
+
+const vrViewer = new VREquirectangularViewer({
+  imageUrl: 'img/equirectangular.jpg'
+})
+vrViewer.enterVR()
+```
+
+与常见打包器配合的注意事项：
+
+- Rollup / webpack / Vite：优先使用 ESM 构建（`*.esm.js`），有助于树摇与现代优化。
+- 确保你的打包配置允许加载图片资源（例如 file-loader / asset modules），或者将图片放在静态目录并使用 URL 引用。
+- 在开发时可直接用 `npm link` 或将本地 dist 输出复制到项目中进行调试。
+
 ### 2. 最简单的使用
 
 ```javascript
