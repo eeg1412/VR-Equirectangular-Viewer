@@ -100,10 +100,6 @@
 
 ### 1. 引入插件
 
-```html
-<script src="vr-plugin.js"></script>
-```
-
 ### 1.1 普通引入（script 标签）
 
 如果你不使用打包工具，可以直接通过 `<script>` 标签引入 UMD 构建文件（例如项目内的 `dist` 目录），插件会挂载到全局 `window`：
