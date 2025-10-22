@@ -6,11 +6,13 @@
  * - 自动释放：退出VR时自动销毁所有资源
  * - 支持超大尺寸图片（自动缩放到4096）
  * - 完整内存管理（GPU和CPU内存）
+ * - 可调节球体半径以控制VR空间感
  *
  * 使用方法:
  * const vrViewer = new VREquirectangularViewer({
  *   imageUrl: 'img/equirectangular.jpg',
  *   maxTextureSize: 4096,
+ *   sphereRadius: 50,  // 球体半径，默认50。值越大空间感越真实，值越小物体看起来越大
  *   onError: (error) => console.error(error),
  *   onVRStart: () => console.log('VR已启动'),
  *   onVREnd: () => console.log('VR已退出，资源已释放')
@@ -27,6 +29,17 @@
  *
  * // 手动销毁（通常不需要，退出VR会自动调用）
  * vrViewer.destroy();
+ *
+ * 参数说明:
+ * @param {string} imageUrl - 全景图片URL（必填）
+ * @param {number} maxTextureSize - 最大纹理尺寸，默认为设备最大值
+ * @param {number} sphereRadius - 球体半径，默认50。建议范围: 30-100
+ *                                 - 较小值(30-40): 物体看起来更大，更有包围感
+ *                                 - 中等值(50-60): 较为自然的视觉体验（推荐）
+ *                                 - 较大值(70-100): 空间感更开阔，物体看起来更远
+ * @param {function} onError - 错误回调函数
+ * @param {function} onVRStart - VR启动回调函数
+ * @param {function} onVREnd - VR退出回调函数
  */
 
 class VREquirectangularViewer {
@@ -34,6 +47,7 @@ class VREquirectangularViewer {
     // 配置选项
     this.imageUrl = options.imageUrl || null
     this.maxTextureSize = options.maxTextureSize || null
+    this.sphereRadius = options.sphereRadius || 50
     this.onError = options.onError || console.error
     this.onVRStart = options.onVRStart || (() => {})
     this.onVREnd = options.onVREnd || (() => {})
@@ -217,7 +231,7 @@ class VREquirectangularViewer {
     const gl = this.gl
     const latBands = 60
     const lonBands = 60
-    const radius = 10
+    const radius = this.sphereRadius
 
     const positions = []
     const texCoords = []
