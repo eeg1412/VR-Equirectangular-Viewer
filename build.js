@@ -6,6 +6,12 @@
 const fs = require('fs')
 const path = require('path')
 
+// 读取 package.json 获取版本号
+const packageJson = JSON.parse(
+  fs.readFileSync(path.join(__dirname, 'package.json'), 'utf8')
+)
+const version = packageJson.version
+
 // 确保 dist 目录存在
 const distDir = path.join(__dirname, 'dist')
 if (!fs.existsSync(distDir)) {
@@ -19,7 +25,7 @@ const sourceCode = fs.readFileSync(sourceFile, 'utf8')
 // 生成 UMD 版本（压缩版）
 const umdContent = `/**
  * VR Equirectangular Viewer
- * @version 1.0.0
+ * @version ${version}
  * @license MIT
  */
 ${sourceCode}
@@ -36,7 +42,7 @@ if (typeof window !== 'undefined') {
 // 生成 ES Module 版本
 const esmContent = `/**
  * VR Equirectangular Viewer
- * @version 1.0.0
+ * @version ${version}
  * @license MIT
  */
 ${sourceCode}

@@ -217,7 +217,7 @@ class VREquirectangularViewer {
     const gl = this.gl
     const latBands = 60
     const lonBands = 60
-    const radius = 10
+    const radius = 50
 
     const positions = []
     const texCoords = []
