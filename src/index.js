@@ -421,7 +421,9 @@ class VREquirectangularViewer {
     }
 
     // 配置XR会话
-    this.xrSession.addEventListener('end', () => this._onSessionEnd())
+    // this.xrSession.addEventListener('end', async () => {
+    //   await this._onSessionEnd()
+    // })
 
     const glLayer = new XRWebGLLayer(this.xrSession, this.gl, {
       antialias: false,
@@ -454,39 +456,47 @@ class VREquirectangularViewer {
   }
 
   /**
-   * 退出VR模式（并自动销毁资源）
+   * 退出VR模式(并自动销毁资源)
+   * @returns {Promise<void>} 会话结束且清理完成后resolve
    */
-  exitVR() {
+  async exitVR() {
     if (this.xrSession) {
-      this.xrSession.end()
-      // 不依赖事件，直接销毁
-      this._cleanup()
+      // session.end() 返回 Promise,等待会话完全结束
+      await this.xrSession.end()
+      // 会话已确认结束,现在清理资源
+      await this._onSessionEnd()
+      console.log('exitVR 结束')
     }
   }
 
-  _onSessionEnd() {
-    this._cleanup()
+  async _onSessionEnd() {
+    console.log('XR会话已结束')
+    await this._cleanup()
   }
 
   /**
    * 清理VR会话和资源
+   * @returns {Promise<void>} 清理完成后resolve
    */
-  _cleanup() {
+  async _cleanup() {
+    console.log('清理VR会话和资源')
     // 避免重复清理
-    if (!this.xrSession && !this.isInitialized) return
+    if (!this.xrSession && !this.isInitialized) {
+      console.log('无需清理，VR会话和资源均已释放')
+      return
+    }
 
     this.xrSession = null
     this.xrRefSpace = null
 
-    // 触发退出回调
-    if (this.isInitialized) {
-      this.onVREnd()
-    }
-
     // 自动销毁释放内存
     if (this.autoDestroyOnExit) {
-      this.destroy()
+      await this.destroy()
     }
+
+    // 触发退出回调
+    this.onVREnd()
+    console.log('VR资源已释放，退出回调已触发')
   }
 
   /**
@@ -582,13 +592,16 @@ class VREquirectangularViewer {
   /**
    * 销毁并释放所有资源
    * 可手动调用，也会在退出VR时自动调用
+   * @returns {Promise<void>} 销毁完成后resolve
    */
-  destroy() {
+  async destroy() {
     if (!this.isInitialized) return // 未初始化则无需清理
-
+    console.log('销毁VR查看器并释放所有资源')
     // 退出VR会话
     if (this.xrSession) {
-      this.xrSession.end()
+      console.log('销毁时发现会话仍然存在，正在结束会话...')
+      await this.xrSession.end()
+      console.log('VR会话已结束')
     }
 
     // 释放WebGL资源
@@ -626,28 +639,49 @@ class VREquirectangularViewer {
       const canvasId = this.canvasId
       const canvas = this.canvas
 
-      const handleContextLost = event => {
-        event.preventDefault()
-
-        // 上下文已丢失,现在可以安全移除canvas
-        const canvasElement = document.getElementById(canvasId)
-        if (canvasElement && canvasElement.parentNode) {
-          canvasElement.parentNode.removeChild(canvasElement)
+      // 使用 Promise 确保上下文丢失完成
+      await new Promise(resolve => {
+        const clearDom = () => {
+          const canvasElement = document.getElementById(canvasId)
+          if (canvasElement && canvasElement.parentNode) {
+            canvasElement.parentNode.removeChild(canvasElement)
+          }
         }
 
-        // 清理事件监听器
-        canvas.removeEventListener('webglcontextlost', handleContextLost)
-      }
+        const handleContextLost = event => {
+          event.preventDefault()
 
-      this.canvas.addEventListener('webglcontextlost', handleContextLost)
+          // 上下文已丢失,现在可以安全移除canvas
+          clearDom()
 
-      // 触发上下文丢失
-      if (this.gl) {
-        const loseContext = this.gl.getExtension('WEBGL_lose_context')
-        if (loseContext) {
-          loseContext.loseContext()
+          // 清理事件监听器
+          canvas.removeEventListener('webglcontextlost', handleContextLost)
+          resolve()
         }
-      }
+
+        // 触发上下文丢失
+        if (this.gl) {
+          const loseContext = this.gl.getExtension('WEBGL_lose_context')
+          if (loseContext) {
+            this.canvas.addEventListener('webglcontextlost', handleContextLost)
+            loseContext.loseContext()
+          } else {
+            // 如果扩展不可用,直接resolve
+            clearDom()
+            resolve()
+          }
+        } else {
+          // 如果没有gl上下文,直接移除canvas并resolve
+          clearDom()
+          resolve()
+        }
+      })
+    }
+
+    if (this.xrSession) {
+      console.log('销毁前发现会话仍然存在，销毁后补偿触发onVREnd')
+      this.onVREnd()
+      console.log('退出回调已触发')
     }
 
     // 重置所有状态
@@ -658,5 +692,6 @@ class VREquirectangularViewer {
     this.isInitialized = false
     this.xrSession = null
     this.xrRefSpace = null
+    console.log('所有资源已释放')
   }
 }

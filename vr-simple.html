@@ -154,7 +154,10 @@
           // 检查是否已在VR中
           if (vrViewer.xrSession) {
             // 退出VR（会自动销毁资源）
-            vrViewer.exitVR()
+            console.log('正在退出VR...')
+            statusEl.textContent = '⏳ 正在退出VR...'
+            await vrViewer.exitVR()
+            console.log('VR已退出')
           } else {
             // 进入VR（此时才加载所有资源）
             statusEl.textContent = '⏳ 加载中...'
@@ -169,9 +172,10 @@
       })
 
       // 手动销毁按钮（通常不需要，退出VR会自动销毁）
-      destroyButton.addEventListener('click', () => {
+      destroyButton.addEventListener('click', async () => {
         if (vrViewer) {
-          vrViewer.destroy()
+          statusEl.textContent = '🗑️ 正在销毁...'
+          await vrViewer.destroy()
           statusEl.textContent = '🗑️ 已手动销毁'
           vrButton.disabled = true
           destroyButton.disabled = true
