@@ -59,6 +59,8 @@ class VREquirectangularViewer {
     // 内部状态
     this.isInitialized = false
     this.autoDestroyOnExit = true // 退出VR时自动销毁
+
+    this._onSessionEnd = this._onSessionEnd.bind(this)
   }
 
   /**
@@ -421,9 +423,7 @@ class VREquirectangularViewer {
     }
 
     // 配置XR会话
-    // this.xrSession.addEventListener('end', async () => {
-    //   await this._onSessionEnd()
-    // })
+    this.xrSession.addEventListener('end', this._onSessionEnd)
 
     const glLayer = new XRWebGLLayer(this.xrSession, this.gl, {
       antialias: false,
@@ -461,6 +461,7 @@ class VREquirectangularViewer {
    */
   async exitVR() {
     if (this.xrSession) {
+      this.xrSession.removeEventListener('end', this._onSessionEnd)
       // session.end() 返回 Promise,等待会话完全结束
       await this.xrSession.end()
       // 会话已确认结束,现在清理资源
