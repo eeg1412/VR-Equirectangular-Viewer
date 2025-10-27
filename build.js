@@ -52,7 +52,7 @@ export default VREquirectangularViewer;
 const terserOptions = {
   format: {
     comments: false, // 移除所有注释
-    preamble: banner  // 但保留版权信息
+    preamble: banner // 但保留版权信息
   },
   compress: {
     drop_console: false, // 保留 console（可根据需要修改）
@@ -67,7 +67,7 @@ async function build() {
     console.log('🔨 开始压缩 UMD 版本...')
     const umdMinified = await minify(umdContent, terserOptions)
     if (umdMinified.error) throw umdMinified.error
-    
+
     fs.writeFileSync(
       path.join(distDir, 'vr-equirectangular-viewer.min.js'),
       umdMinified.code
@@ -77,7 +77,7 @@ async function build() {
     console.log('🔨 开始压缩 ESM 版本...')
     const esmMinified = await minify(esmContent, terserOptions)
     if (esmMinified.error) throw esmMinified.error
-    
+
     fs.writeFileSync(
       path.join(distDir, 'vr-equirectangular-viewer.esm.js'),
       esmMinified.code
@@ -87,11 +87,17 @@ async function build() {
     console.log('\n✅ 构建完成！')
     console.log('生成的文件:')
     console.log('  - dist/vr-equirectangular-viewer.min.js (UMD格式，已压缩)')
-    console.log('  - dist/vr-equirectangular-viewer.esm.js (ES Module格式，已压缩)')
-    
+    console.log(
+      '  - dist/vr-equirectangular-viewer.esm.js (ES Module格式，已压缩)'
+    )
+
     // 显示文件大小
-    const umdSize = fs.statSync(path.join(distDir, 'vr-equirectangular-viewer.min.js')).size
-    const esmSize = fs.statSync(path.join(distDir, 'vr-equirectangular-viewer.esm.js')).size
+    const umdSize = fs.statSync(
+      path.join(distDir, 'vr-equirectangular-viewer.min.js')
+    ).size
+    const esmSize = fs.statSync(
+      path.join(distDir, 'vr-equirectangular-viewer.esm.js')
+    ).size
     console.log(`\n文件大小:`)
     console.log(`  - UMD: ${(umdSize / 1024).toFixed(2)} KB`)
     console.log(`  - ESM: ${(esmSize / 1024).toFixed(2)} KB`)
