@@ -44,5 +44,8 @@
   "homepage": "https://github.com/eeg1412/VR-Equirectangular-Viewer#readme",
   "engines": {
     "node": ">=12.0.0"
+  },
+  "devDependencies": {
+    "terser": "^5.36.0"
   }
 }
